@@ -1,113 +1,179 @@
+import { HelpCenterOutlined } from "@mui/icons-material";
 import Image from "next/image";
+import Paper from "@mui/material/Paper";
+import InputBase from "@mui/material/InputBase";
+import Divider from "@mui/material/Divider";
+import IconButton from "@mui/material/IconButton";
+import MenuIcon from "@mui/icons-material/Menu";
+import SearchIcon from "@mui/icons-material/Search";
+import DirectionsIcon from "@mui/icons-material/Directions";
+import Button from "@mui/material/Button";
+import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
+import AutoAwesomeOutlinedIcon from "@mui/icons-material/AutoAwesomeOutlined";
+import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
+import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
+import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
+import Task from "./Components/Task";
+import TasksBoard from "./Components/TasksBoard";
+import { cookies, headers } from "next/headers";
+import { NextApiRequest } from "next";
+import axios from "axios";
+const jwt = require("jsonwebtoken");
 
-export default function Home() {
+import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
+
+type User = {
+  name: string;
+  id: string;
+};
+
+export default async function Home() {
+  // console.log(cookies().get("token")?.value);
+  // "use server";
+  const cookieStore = cookies();
+
+  const token = cookieStore.get("token")?.value;
+  let user = null;
+  const config = {
+    withCredentials: true,
+    headers: {
+      Cookie: `token=${token}`,
+    },
+  };
+  try {
+    // console.log(config);
+    user = await axios.get("http://localhost:5001/api/auth", config);
+    // console.log("🚀 ~ Home ~ user:", user);
+    // console.log("🚀 ~ Home ~ user:", user.data);
+  } catch (error) {
+    console.log(error);
+  }
+
+  // const user: User = await res.json();
+  // console.log("🚀 ~ Home ~ user:", user);
+
+  // const jk = await getSessionData()
+  // console.log(await getSessionData);
+
+  // const user = await getSessionData();
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    <div className="flex-grow w-full text-black bg-[#F7F7F7] pl-4 pr-7">
+      <div className="flex justify-between mt-5">
+        <span className="text-4xl font-medium">
+          Good Morning, {user && user?.data?.user?.name} !
+        </span>
+        <span className="content-center">
+          Help and Feedback
+          <HelpCenterOutlined />
+        </span>
+      </div>
+      <div className="flex gap-x-3 font-10 mt-4">
+        <div className="p-4 rounded-sm bg-white flex w-1/3">
+          <div>
+            <Image alt="img1" src="/next.svg" height={30} width={30} />
+          </div>
+          <div>
+            <div className="text-md font-medium text-[#8C8C8C]">
+              Introducing Tags
+            </div>
+            <div className="text-xs text-[#868686]">
+              Easily categorize and find your notes by adding tags. Keep your
+              workspace clutter-free and efficient.
+            </div>
+          </div>
+        </div>
+        <div className="p-4 rounded-sm bg-white flex w-1/3">
+          <div>
+            <Image alt="img1" src="/next.svg" height={30} width={30} />
+          </div>
+          <div>
+            <div className="text-md font-medium text-[#8C8C8C]">
+              Share Notes Instantly
+            </div>
+            <div className="text-xs text-[#868686]">
+              Effortlessly share your notes with others via email or link.
+              Enhance collaboration with quick sharing options.
+            </div>
+          </div>
+        </div>
+        <div className="p-4 rounded-sm bg-white flex w-1/3">
+          <div>
+            <Image alt="img1" src="/next.svg" height={30} width={30} />
+          </div>
+          <div>
+            <div className="text-md font-medium text-[#8C8C8C]">
+              Access Anywhere
+            </div>
+            <div className="text-xs text-[#868686]">
+              Sync your notes across all devices. Stay productive whether
+              you&apos;re on your phone, tablet, or computer.
+            </div>
+          </div>
         </div>
       </div>
-
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
+      <div className="flex mt-4 justify-between">
+        <Paper
+          component="form"
+          sx={{
+            p: "2px 4px",
+            display: "flex",
+            alignItems: "center",
+            width: 200,
+          }}
+        >
+          <InputBase
+            sx={{ ml: 1, flex: 1 }}
+            placeholder="Search"
+            inputProps={{ "aria-label": "search" }}
+          />
+          <IconButton type="button" sx={{ p: "10px" }} aria-label="searchi">
+            <SearchIcon />
+          </IconButton>
+        </Paper>
+        <div className="flex gap-x-3 text-sm">
+          <Button
+            className="menuButtons"
+            variant="outlined"
+            endIcon={<CalendarTodayOutlinedIcon />}
+            sx={{ fontSize: "0.6rem" }}
+          >
+            Calendar view
+          </Button>
+          <Button
+            className="menuButtons"
+            variant="outlined"
+            endIcon={<AutoAwesomeOutlinedIcon />}
+            sx={{ fontSize: "0.6rem" }}
+          >
+            Automation
+          </Button>
+          <Button
+            className="menuButtons"
+            variant="outlined"
+            endIcon={<FilterAltOutlinedIcon />}
+            sx={{ fontSize: "0.6rem" }}
+          >
+            Filter
+          </Button>
+          <Button
+            className="menuButtons"
+            variant="outlined"
+            endIcon={<ShareOutlinedIcon />}
+            sx={{ fontSize: "0.6rem" }}
+          >
+            Share
+          </Button>
+          <Button
+            className="menuButtons"
+            variant="outlined"
+            endIcon={<AddCircleOutlinedIcon />}
+            sx={{ fontSize: "0.7rem" }}
+          >
+            Create New
+          </Button>
+        </div>
       </div>
-
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+      <TasksBoard />
+    </div>
   );
 }
