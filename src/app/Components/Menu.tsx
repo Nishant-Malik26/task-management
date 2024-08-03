@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { SyntheticEvent, useEffect, useState } from "react";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import IconButton from "@mui/material/IconButton";
 import LightModeIcon from "@mui/icons-material/LightMode";
@@ -14,19 +14,35 @@ import InsertChartOutlinedTwoToneIcon from "@mui/icons-material/InsertChartOutli
 import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import { useAppDispatch } from "@/store/store";
-import { logout } from "@/store/register";
+// import { logout } from "@/store/register";
 import { useRouter } from "next/navigation";
 import Drawer from "@mui/material/Drawer";
-
+import { headers } from "next/headers";
+// import { }
 // import { router } from "next/router";
 // import "@/app/global.css";
 const Menu = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
-  const handleLogout = () => {
-    console.log("logut called");
-    dispatch(logout());
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("/logout", {
+        method: "DELETE",
+      });
+      console.log(response);
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
+
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    status: "Inprogress",
+    priority: "",
+    deadline: "",
+    addedProperties: "",
+  });
 
   const [open, setOpen] = useState(false);
 
@@ -38,8 +54,28 @@ const Menu = () => {
   //     console.log("🚀 ~ useEffect ~ token:", token);
 
   //   }, [router]); // Dependency on router
-  const handleCreate = async (formData: any) => {
-    await fetch("http://localhost:5001/api/task", { method: "POST" });
+  const handleCreate = async (e: any) => {
+    console.log("🚀 ~ handleCreate ~ e:", formData);
+    e.preventDefault();
+    // console.log("🚀 ~ handleCreate ~ formData:", formData);
+    // const formData = new FormData(e.currentTarget); // Assuming formData is being created from the form
+    // console.log("🚀 ~ handleCreate ~ formData:", formData);
+
+    await fetch("http://localhost:5001/api/tasks", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+
+      // withCredentials: true,
+      // @ts-ignore
+      body: JSON.stringify({ ...formData }),
+      credentials: "include",
+    });
+  };
+
+  const handleFormChange = (e: any) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
   return (
     <div className="max-w-64 mr-auto ml-2 h-screen flex flex-col justify-between shadow-sm border-r-2 pr-3">
@@ -58,18 +94,31 @@ const Menu = () => {
           <Drawer open={open} anchor="right" onClose={() => setOpen(false)}>
             {
               <>
-                <div>
-                  <input placeholder="Title" name="title"></input>
-                  <select name="status">
-                    <option>heloe</option>
+                <form onSubmit={handleCreate}>
+                  <input
+                    onChange={handleFormChange}
+                    placeholder="Title"
+                    name="title"
+                  ></input>
+                  <select name="status" onChange={handleFormChange}>
+                    <option value={"inprogress"}>In Progress</option>
+                    <option value={"underreview"}>Under Review</option>
+                    <option value={"todo"}>To Do</option>
+                    <option value={"finished"}>Finished</option>
                   </select>
-                  <select name="priority">
-                    <option>heloe</option>
+                  <select name="priority" onChange={handleFormChange}>
+                    <option>low</option>
+                    <option>high</option>
                   </select>
-                  <label htmlFor="birthday">Birthday:</label>
-                  <input type="date" id="birthday" name="birthday"></input>
-                </div>
-                <Button onClick={handleCreate}>Create</Button>
+                  <label htmlFor="deadline">Deadline:</label>
+                  <input
+                    type="date"
+                    id="deadline"
+                    name="deadline"
+                    onChange={handleFormChange}
+                  ></input>
+                  <Button type="submit">Create</Button>
+                </form>
               </>
             }
           </Drawer>

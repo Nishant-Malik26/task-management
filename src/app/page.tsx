@@ -20,7 +20,7 @@ import { NextApiRequest } from "next";
 import axios from "axios";
 const jwt = require("jsonwebtoken");
 
-import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
+import { redirect } from "next/navigation";
 
 type User = {
   name: string;
@@ -33,6 +33,10 @@ export default async function Home() {
   const cookieStore = cookies();
 
   const token = cookieStore.get("token")?.value;
+  console.log("🚀 ~ Home ~ token:", token);
+  if (!token) {
+    redirect("/login");
+  }
   let user = null;
   const config = {
     withCredentials: true,
@@ -43,6 +47,7 @@ export default async function Home() {
   try {
     // console.log(config);
     user = await axios.get("http://localhost:5001/api/auth", config);
+
     // console.log("🚀 ~ Home ~ user:", user);
     // console.log("🚀 ~ Home ~ user:", user.data);
   } catch (error) {

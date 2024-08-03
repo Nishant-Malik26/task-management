@@ -79,6 +79,8 @@ export const register =
         config
       );
       dispatch<any>(registerSuccess({ token: res.data.token }));
+      redirect('/')
+
       // dispatch<any>(loadUser());
     } catch (error: any) {
       const errors = error?.response?.data?.errors;
@@ -108,7 +110,6 @@ export const login =
         'Content-Type': 'application/json',
       },
       withCredentials: true,
-
     };
 
     const body = JSON.stringify({ email, password });
@@ -120,8 +121,7 @@ export const login =
       );
       dispatch<any>(loginSuccess({ token: res.data.token }));
       // dispatch<any>(loadUser());
-      console.log('is it ')
-      redirect('/')
+      // redirect('/')
 
     } catch (error: any) {
       const errors = error?.response?.data?.errors;
