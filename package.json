@@ -20,6 +20,7 @@
     "@types/react-redux": "^7.1.33",
     "axios": "^1.7.2",
     "bcryptjs": "^2.4.3",
+    "dayjs": "^1.11.12",
     "express-validator": "^7.1.0",
     "js-cookie": "^3.0.5",
     "jsonwebtoken": "^9.0.2",
